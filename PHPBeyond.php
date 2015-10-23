@@ -133,11 +133,24 @@
 	metode su isto sto i funkcije, samo sto kada se deklarisu unutar klasa, onda su metode
 
 
+	// INSTANCIRANJE KLASA
+
+	new Person(); // kao da postavljamo prazan papir sa poljima za popunjavanje
 
 
+	$person = new Person(); // instanciranje klase
+	$person2 = new Person(); // dve razlicite instance klase Person
 
+	if (is_a($person, 'Person')) // gledamo da li instanca pripada klasi, vraca true/false
 
+	$person->metodaIzKlasePerson(); // pozivanje metode klase
 
+	$this // referencira na instancu trenutne klase (znaci poziva se samo unutar klase)
 
+	// VARIJABLE KLASE
 
+	// varijable koje se pojavljuju u klasama se nazivaju properties ili attributes ili instance variables te klase
+	// kada deklarisemo varijable unutar klase, moramo da koristimo var!
+	// kada ih pozivamo, ne koristimo $ (jer bi to onda bila varijabilna varijabla), a ne koristimo ni ()
+	$person->arm_count; // to je to
 ?>

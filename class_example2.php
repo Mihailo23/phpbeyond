@@ -13,9 +13,9 @@ foreach($methods as $method) {
 }
 
 if(method_exists('Person', 'say_hello')) {
-	echo "exists";
+	echo "Method exists";
 } else {
-	echo "does not exist";
+	echo "Method does not exist";
 }
 
 ?>
