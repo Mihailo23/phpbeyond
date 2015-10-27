@@ -153,4 +153,119 @@
 	// kada deklarisemo varijable unutar klase, moramo da koristimo var!
 	// kada ih pozivamo, ne koristimo $ (jer bi to onda bila varijabilna varijabla), a ne koristimo ni ()
 	$person->arm_count; // to je to
+
+	// NASLEDJIVANJE KLASA
+
+	definisemo jednu klasu, onda definisemo drugu klasu uz pomoc kljucne reci extends, i onda ona nasledjuje metode i varijable prve klase
+
+	class CompactCar extends Car {}
+
+	get_parent_class();
+	is_subclass_of(object, class_name);
+
+	// MODIFIKATORI PRISTUPA
+
+	public // dostupno svuda, default
+	private // samo unutar klase u kojoj se nalazi
+	protected // malo slobodnije, iz ove klase ili njenih podklasa
+
+	po defaultu kad koritimo var, to je kao da smo koristili public!
+
+	public $a = 1;
+	protected $b = 2;
+	private $c = 3;
+
+	// SETERI I GETERI
+
+	class SetterGetterExample
+	{
+		private $a=1;
+
+		public function get_a() { // GETTER
+			return $this->a;
+		}
+
+		public function set_a($value) { // SETTER (primer banke)
+			$this->a = $value;
+		}
+	}
+
+	// STATIC
+
+
+	class Student {
+		static $total_students=0;
+
+		static function welcome_students($var="Hello") {
+			echo "{$var} students.";
+		}
+	}
+
+	// ovako imamo pristup i varijabli $total_students i funkciji welcome_studenst cak iako nemamo instance
+
+	POZIVANJE INSTANCE
+	// $student = new Student();
+	// echo $student->total_students;
+
+	STATICKI POZIV
+	echo Student::$total_students;
+
+	SA STATICKIM METODAMA NE MOZEMO DA KORISTIMO $this!!!!!
+	umesto toga koristimo self!!!
+
+	static function add_student() {
+		self::$total_students++;
+	}
+
+	// kada u nasledjivanju negde u klasama koje nasledjuju promenimo vrednost statickoj varijabli, njena vrednost se menja u svim klasama u kojima postoji!!!
+
+	// SCOPE RESOLUTION OPERATOR 
+
+	to su ove :: // paamayim nekudotayim ili dupla dvotacka
+
+	// REFERENCIRANJE PARENT KLASE SA ::
+
+	parent:: // kljucna rec
+	// ono sto je najbitnije je da ovako mozemo da koristimo :: sa instancama, i ovo radi samo sa metodama parenta, ne i sa atributima
+	// stoga mozemo da overrajdujemo parent metodu, ali da i dalje koristimo ono sto imamo sacuvano u njoj
+
+	// KONSTRUKTORI I DESTRUKTORI KLASA
+
+	// konstruktori su odlicni za inicijalizaciju svih objekata pre nego sto se on zapravo koristi
+
+	class Table {
+		function __construct(){ // moze da ima artibute
+			// ovde inicijalizujemo sve pocetne vrednosti atributa funkcije Table
+		}
+	}
+
+	// destruktori se jako retko koriste
+
+	// KLONIRANJE (KOPIRANJE) OBJEKATA
+
+	$b = clone $a; // sad nije referenca objekta $a, nego novi objekat
+
+	function __clone() // konstruktor za kloniranje
+
+	// UPOREDJIVANJE OBJEKATA
+
+	uporedjivanje:	== 
+	identicnost:	===
+
+	$box === $box_reference; // ostali svi slucajevi su netacni
+
+	$box == $box_reference;
+	$box == $box_clone;
+	$box == $another_box; // sve tacno, samo ako promenimo vrednost atributa, nece biti tacno
+
+
+
+
+
+
+
+
+
+
+
 ?>
