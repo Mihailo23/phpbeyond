@@ -474,20 +474,286 @@
 
 	$dbhost = "localhost";
 	$dbuser = "ime_usera";
-	$
+	$dbpass = "password";
+	$dbname = "ime_baze";
+	$connection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname); // ovu varijablu koristimo posle za sve sto ima veze sa bazom
+
+	// test da li smo se uspesno povezali s bazom:
+
+	if (mysqli_connect_errno()) {
+		die("Database connection failed: " . 
+			mysqli_connect_error() . // vraca prazan string ako nema erora, zato je gore errno
+			" (" . mysqli_connect_errno() . ")"
+		);
+	}
+
+	// zatvaranje konekcije na kraju, posle </html>
+
+	mysql_close($connection);
+
+	// UZIMANJE PODATAKA MYSQL-om
+
+	mysqli_query();
+	mysqli_fetch_row();
+	mysqli_free_result();
+
+	$query  = "SELECT * ";
+	$query .= "FROM table"; // bolje pisati ovako zbog pregletnosti, a ne sve u jednom redu
+	$result = mysqli_query($connection, $query); // specijalan resourse objekat, skup redova iz tabele
+
+	if (!$result) {
+		die("Database query failed."); // ne pojavljuje se ako nema rezultata, samo ako imamo gresku u query-ju
+	}
+
+	// VRACANJE PODATAKA
+
+	while ($subject = mysqli_fetch_row($result)) { // dok god ima nizova koji mogu da se upisu u varijablu $subject, ovde imamo "=", ne "==", to ima veze sa array pointer-ima, ova funkcija mysqli_fetch_row() sama povecava array pointer za nas, tako da je ovo dovoljno
+		// vracanje podataka iz svakog niza
+		echo $subject["id"] . "<br>";
+		echo $subject["menu_name"] . "<br>";
+		echo $subject["position"] . "<br>";
+		echo $subject["visible"] . "<br>"; // ispis svih podataka iz niza
+		echo "<hr>";
+	}
+
+	// OSLOBADJANJE PODATAKA
+
+	mysqli_free_result($result);
+
+	// RAD SA VRACENIM PODACIMA
+
+	mysqli_fetch_row() // ovo je najbrza, niz sa indeksima
+	mysqli_fetch_assoc() // ovo je mozda najbolja opcija, asocijativni niz, lakse za pristup podacima
+	mysqli_fetch_array() // ova vraca obe opcije, ali zauzima najvise mesta i najsporija je (ali mi necemo to primetiti, osim ako ima na hiljade konekcija u sekundi)
+	mysqli_fetch_object() // OOP
+
+	// CREATE KORISTECI PHP
+
+	// dobijamo true/false, ne objekat
+
+	http://i.imgur.com/4Bqn5hy.png
+
+	// Nemamo treci i cetvrti korak, najcesce vrednosti ubacujemo preko forme, iz $_POST
+
+	$query  = "INSERT INTO subjects ("
+	$query .= " menu_name, position, visible";
+	$query .= ") VALUES (";
+	$query .= " '{$menu_name}', {$position}, {$visible}";
+	$query .= ")";
+
+	$result = mysqli_query($connection, $query); // specijalan resourse objekat, skup redova iz tabele
+
+	if ($result) {
+		// success
+		echo "Success!";
+	} else {
+		// failure
+		die("Database query failed. " . mysqli_error($connection)); // ovako dobijamo poslednji error, tj. ovaj error
+	}
+
+	mysqli_insert_id($connection); // da dobijemo id koji je ubacen
+
+	// UPDATE KORISTECI PHP
+
+	$query  = "UPDATE subjects SET ";
+	$query .= "menu_name = '{$menu_name}', ";
+	$query .= "position = {$position}, ";
+	$query .= "visible = {$visible}, ";
+	$query .= "WHERE id = {$id}"; // cak iako ID ne postoji, mi cemo dobiti Success! ako ne stavimo mysqli_affected_rows($connection) == 1 u if
+
+	$result = mysqli_query($connection, $query);
 
 
+	if ($result && mysqli_affected_rows($connection) == 1) { // da li je neki red promenjen
+		// success
+		echo "Success!";
+	} else {
+		// failure
+		die("Database update failed. " . mysqli_error($connection));
+	}
+
+	// ako prosledimo vrednosti koje su apsolutno iste, imacemo nula promenjenih redova
+
+	// DELETE KORISTECI PHP
+
+	$query  = "DELETE FROM subjects ";
+	$query .= "WHERE id = {$id} ";
+	$query .= "LIMIT 1";
+
+	if ($result && mysqli_affected_rows($connection) == 1) { // da li je neki red promenjen
+		// success
+		echo "Success!";
+	} else {
+		// failure
+		die("Subject delete failed. " . mysqli_error($connection));
+	}
+
+	// SQL Injection
+
+	"INSERT INTO subjects (menu_name, position, visible) VALUES ('Mica', 1, 1)" // stringovi uvek sa ''!!!
+
+	"INSERT INTO subjects (menu_name, position, visible) VALUES ('Mica's posao', 1, 1)" // ovo puca, jer zatvorimo ' pre vremena!!!
+
+	// ovako neko moze da proba da nam sjebe sajt
+	// najveci problem kod napada na sajt je sql injection
+
+	$menu_name = "'); DROP TABLE subjects; '"; // obrisao bi celu tabelu subjects
+
+	// "ESCAPING" strings
+
+	// samo treba ubaciti "\" pre "'" i to ne treba da radimo rucno, nego preko funkcije
+
+	addslashes($string);
+
+	// nekad je to bilo po defaultu, ali je pravilo mnogo problema, pa je uklonjeno u PHP 5.4
+
+	mysqli_real_escape_string($db, $string); // idealno, dodato u PHP 4.3-5.0
+
+	$menu_name = "Today's bla bla";
+
+
+	// escape all strings always!!!
+	$menu_name = mysqli_real_escape_string($connection, $menu_name); // sad smo ga pravilno pripremili za unosenje u bazu
+
+	$query  = "INSERT INTO subjects ("
+	$query .= " menu_name, position, visible";
+	$query .= ") VALUES (";
+	$query .= " '{$menu_name}', {$position}, {$visible}";
+	$query .= ")";
+
+	// Prepared statements
+
+	// templejti za CRUD - jos nisam za to :)
+
+	/*------------------------------------*\
+	    PRAVLJENJE PRVOG CMS-a
+	\*------------------------------------*/
+
+	// ISCRTAVANJE PROJEKTA
+
+	http://i.imgur.com/dpwHeHo.png
+
+	// BAZA
+
+	http://i.imgur.com/ZoAi0Wt.png
+
+	POVEZIVANJE SA BAZOM
+
+	define("DB_SERVER", "localhost");
+	define("DB_USER", "widget_corp_user");
+	define("DB_PASS", "widget_corp_password");
+	define("DB_NAME", "widget_corp");
 	
+	// 1. Create a database connection
+	$connection = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+	// Test if connection succedded
+	if (mysqli_connect_errno()) {
+		die("Database connection failed: " .
+			mysqli_connect_error() . 
+			" (" . mysqli_connect_errno() . ")"
+		);
+	}
 
+	ISPISIVANJE SVIH SUBJECTS I PAGES
 
+	?>
+	<ul class="subjects">
+	<?php 
+		// 2. Perform database query
+		$query  = "SELECT * ";
+		$query .= "FROM subjects ";
+		$query .= "WHERE visible = 1 ";
+		$query .= "ORDER BY position ASC";
+		$subject_set = mysqli_query($connection, $query);
+		confirm_query($subject_set);
+	?>
+	<?php
+		// 3. Use returned data (if any)
+		while ($subject = mysqli_fetch_assoc($subject_set)) {
+		// output data from each row
+	?>
+	
+		<li>
+			<?php echo $subject["menu_name"]; ?>
+			<?php 
+				// 2. Perform database query
+				$query  = "SELECT * ";
+				$query .= "FROM pages ";
+				$query .= "WHERE visible = 1 ";
+				$query .= "AND subject_id = {$subject['id']} ";
+				$query .= "ORDER BY position ASC";
+				$page_set = mysqli_query($connection, $query);
+				confirm_query($page_set);
+			?>
+			<ul class="pages">
+				<?php
+					// 3. Use returned data (if any)
+					while ($page = mysqli_fetch_assoc($page_set)) {
+					// output data from each row
+				?>
+				<li><?php echo $page["menu_name"]; ?></li>
+				<?php
+					} 
+				?>
+				<?php
+					// 4. Release returned data
+					mysqli_free_result($page_set);
+				?>
+			</ul>
+		</li>
 
+	<?php
+		} 
+	?>
+	<?php
+		// 4. Release returned data
+		mysqli_free_result($subject_set);
+	?>
+	</ul>
+	<?php
 
+	REFAKTORISANJE NAVIGACIJE
 
+	// REFAKTORISANJE: pregled dosadasnjeg koda da bismo promenili njeogvu skrukturu ili izgled bez menjanja njegovog ponasanja
+	// ovo radimo zbog:
+	// - pojednostavljivanja koda
+	// - razjasnjivanja
+	// - odrzivosti
+	// - efikasnosti
+	// - fleksibilnosti (ponovno koriscenje i nadogradnja)
 
+	// funkcije su odlican nacin refaktorisanja koda
 
+	// primeri:
 
+	function find_all_subjects() {
+		global $connection;
 
+		$query  = "SELECT * ";
+		$query .= "FROM subjects ";
+		$query .= "WHERE visible = 1 ";
+		$query .= "ORDER BY position ASC";
+		$subject_set = mysqli_query($connection, $query);
+		confirm_query($subject_set);
+		return $subject_set;
+	}
 
+	function find_pages_for_subject($subject_id) {
+		global $connection;
+
+		$query  = "SELECT * ";
+		$query .= "FROM pages ";
+		$query .= "WHERE visible = 1 ";
+		$query .= "AND subject_id = {$subject_id} ";
+		$query .= "ORDER BY position ASC";
+		$page_set = mysqli_query($connection, $query);
+		confirm_query($page_set);
+		return $page_set;
+	}
+
+	// PODSETNIK: kad god radim sa query stringovima (?subject=<?php echo $subject_id;) uvek treba da urlencode vrednost $subject_id
+
+	NAVIGACIJA - // navigaciju mozemo da prebacimo u poseban fajl (navigation.php) ili da je pozivamo preko funkcije
 
 
 
